@@ -1,7 +1,10 @@
 (function () {
   "use strict";
 
-  var API_BASE = "/erp-api";
+  var runtimeConfig = window.EDUSMART_CONFIG || {};
+  var API_BASE = normalizeApiBase(runtimeConfig.apiBase || "/erp-api");
+  var SOCKET_URL = normalizeSocketUrl(runtimeConfig.socketUrl || "");
+  var SOCKET_PATH = runtimeConfig.socketPath || "/socket.io";
   var SESSION_KEY = "college-erp-session";
   var root = document.getElementById("app");
 
@@ -378,7 +381,8 @@
     state.liveStatus = "connecting";
     render();
 
-    socket = window.io({
+    socket = window.io(SOCKET_URL || undefined, {
+      path: SOCKET_PATH,
       auth: {
         token: state.token
       }
@@ -469,7 +473,7 @@
       headers.Authorization = "Bearer " + state.token;
     }
 
-    var response = await fetch(API_BASE + path, Object.assign({}, settings, { headers: headers }));
+    var response = await fetch(resolveApiUrl(path), Object.assign({}, settings, { headers: headers }));
 
     if (responseType === "blob") {
       if (!response.ok) {
@@ -1408,5 +1412,29 @@
       return "Connecting";
     }
     return "Offline";
+  }
+
+  function resolveApiUrl(path) {
+    return API_BASE.replace(/\/$/, "") + path;
+  }
+
+  function normalizeApiBase(value) {
+    var raw = String(value || "").trim();
+
+    if (!raw) {
+      return "/erp-api";
+    }
+
+    return raw.endsWith("/erp-api") ? raw : raw.replace(/\/$/, "") + "/erp-api";
+  }
+
+  function normalizeSocketUrl(value) {
+    var raw = String(value || "").trim();
+
+    if (!raw || raw === "same-origin") {
+      return "";
+    }
+
+    return raw.replace(/\/$/, "");
   }
 })();

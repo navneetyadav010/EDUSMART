@@ -20,16 +20,13 @@ const { ensureDb, readDb, writeDb } = require("./college-erp/storage");
 const port = Number(process.env.PORT || 4000);
 const rootDir = path.resolve(__dirname, "..");
 const frontDir = path.join(rootDir, "erp");
-
-ensureDb();
+const corsOptions = createCorsOptions();
 
 const app = express();
+app.set("trust proxy", 1);
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin: true,
-    credentials: true
-  }
+  cors: corsOptions
 });
 
 app.use(
@@ -38,7 +35,7 @@ app.use(
     crossOriginEmbedderPolicy: false
   })
 );
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json({ limit: "2mb" }));
 app.use(
   "/erp-api",
@@ -85,14 +82,15 @@ app.get("/erp-api/health", function health(_req, res) {
   res.json({
     ok: true,
     service: "edusmart",
+    storage: process.env.MONGODB_URI ? "mongodb" : "file",
     timestamp: Date.now()
   });
 });
 
 app.post("/erp-api/demo/bootstrap", async function bootstrapDemo(_req, res) {
-  const db = readDb();
+  const db = await readDb();
   const credentials = await bootstrapDemoCollege(db);
-  writeDb(db);
+  await writeDb(db);
   res.status(201).json({
     message: "Demo college is ready.",
     credentials
@@ -111,7 +109,7 @@ app.post("/erp-api/auth/register-admin", async function registerAdmin(req, res) 
     return;
   }
 
-  const db = readDb();
+  const db = await readDb();
   const existingUser = db.users.find(function matchUser(user) {
     return user.email.toLowerCase() === email;
   });
@@ -143,7 +141,7 @@ app.post("/erp-api/auth/register-admin", async function registerAdmin(req, res) 
   db.colleges.push(college);
   db.subscriptions.push(subscription);
   db.users.push(user);
-  writeDb(db);
+  await writeDb(db);
 
   res.status(201).json({
     token: signToken(user),
@@ -156,7 +154,7 @@ app.post("/erp-api/auth/register-admin", async function registerAdmin(req, res) 
 app.post("/erp-api/auth/login", async function login(req, res) {
   const email = cleanString(req.body.email).toLowerCase();
   const password = String(req.body.password || "");
-  const db = readDb();
+  const db = await readDb();
   const user = db.users.find(function matchUser(entry) {
     return entry.email.toLowerCase() === email;
   });
@@ -175,8 +173,8 @@ app.post("/erp-api/auth/login", async function login(req, res) {
   });
 });
 
-app.get("/erp-api/auth/me", requireAuth, function authMe(req, res) {
-  const db = readDb();
+app.get("/erp-api/auth/me", requireAuth, async function authMe(req, res) {
+  const db = await readDb();
   const user = db.users.find(function matchUser(entry) {
     return entry.id === req.auth.sub;
   });
@@ -195,7 +193,7 @@ app.get("/erp-api/auth/me", requireAuth, function authMe(req, res) {
 });
 
 app.get("/erp-api/dashboard", requireAuth, async function dashboard(req, res) {
-  const db = readDb();
+  const db = await readDb();
   const dashboardData = await buildDashboardData(db, req.auth.collegeId, req.auth);
   const selectedStudentId =
     req.auth.role === "student"
@@ -217,7 +215,8 @@ app.get("/erp-api/dashboard", requireAuth, async function dashboard(req, res) {
 });
 
 app.get("/erp-api/students", requireAuth, async function listStudents(req, res) {
-  const dashboardData = await buildDashboardData(readDb(), req.auth.collegeId, req.auth);
+  const db = await readDb();
+  const dashboardData = await buildDashboardData(db, req.auth.collegeId, req.auth);
   const search = cleanString(req.query.search).toLowerCase();
   const risk = cleanString(req.query.risk);
   const department = cleanString(req.query.department);
@@ -258,7 +257,7 @@ app.post("/erp-api/students", requireAuth, allowRoles("admin"), async function c
     return;
   }
 
-  const db = readDb();
+  const db = await readDb();
   const context = getCollegeContext(db, req.auth.collegeId);
   const limit = context.subscription && context.subscription.plan === "free" ? Number(context.subscription.studentLimit || 60) : Infinity;
 
@@ -306,7 +305,7 @@ app.post("/erp-api/students", requireAuth, allowRoles("admin"), async function c
     });
   }
 
-  writeDb(db);
+  await writeDb(db);
   const profile = await buildStudentProfile(db, req.auth.collegeId, studentId);
   emitCollegeEvent(req.auth.collegeId, "student.created", { studentId });
   res.status(201).json({ student: profile });
@@ -318,7 +317,8 @@ app.get("/erp-api/students/:studentId", requireAuth, async function getStudent(r
     return;
   }
 
-  const profile = await buildStudentProfile(readDb(), req.auth.collegeId, req.params.studentId);
+  const db = await readDb();
+  const profile = await buildStudentProfile(db, req.auth.collegeId, req.params.studentId);
 
   if (!profile) {
     res.status(404).json({ error: "Student not found." });
@@ -328,8 +328,8 @@ app.get("/erp-api/students/:studentId", requireAuth, async function getStudent(r
   res.json({ student: profile });
 });
 
-app.delete("/erp-api/students/:studentId", requireAuth, allowRoles("admin"), function deleteStudent(req, res) {
-  const db = readDb();
+app.delete("/erp-api/students/:studentId", requireAuth, allowRoles("admin"), async function deleteStudent(req, res) {
+  const db = await readDb();
   const index = db.students.findIndex(function matchStudent(student) {
     return student.id === req.params.studentId && student.collegeId === req.auth.collegeId;
   });
@@ -352,7 +352,7 @@ app.delete("/erp-api/students/:studentId", requireAuth, allowRoles("admin"), fun
   db.users = db.users.filter(function keepUsers(entry) {
     return entry.studentId !== req.params.studentId;
   });
-  writeDb(db);
+  await writeDb(db);
   emitCollegeEvent(req.auth.collegeId, "student.deleted", { studentId: req.params.studentId });
   res.json({ ok: true });
 });
@@ -366,7 +366,7 @@ app.post("/erp-api/students/:studentId/attendance", requireAuth, allowRoles("adm
     return;
   }
 
-  const db = readDb();
+  const db = await readDb();
   const student = getStudentRecord(db, req.auth.collegeId, req.params.studentId);
 
   if (!student) {
@@ -393,7 +393,7 @@ app.post("/erp-api/students/:studentId/attendance", requireAuth, allowRoles("adm
   }
 
   await refreshAlertsForStudents(db, req.auth.collegeId, [student.id]);
-  writeDb(db);
+  await writeDb(db);
 
   const profile = await buildStudentProfile(db, req.auth.collegeId, student.id);
   emitCollegeEvent(req.auth.collegeId, "attendance.updated", { studentId: student.id, date, status });
@@ -412,7 +412,7 @@ app.post("/erp-api/students/:studentId/marks", requireAuth, allowRoles("admin"),
     return;
   }
 
-  const db = readDb();
+  const db = await readDb();
   const student = getStudentRecord(db, req.auth.collegeId, req.params.studentId);
 
   if (!student) {
@@ -432,15 +432,16 @@ app.post("/erp-api/students/:studentId/marks", requireAuth, allowRoles("admin"),
   });
 
   await refreshAlertsForStudents(db, req.auth.collegeId, [student.id]);
-  writeDb(db);
+  await writeDb(db);
 
   const profile = await buildStudentProfile(db, req.auth.collegeId, student.id);
   emitCollegeEvent(req.auth.collegeId, "marks.updated", { studentId: student.id, subject, assessment });
   res.status(201).json({ student: profile });
 });
 
-app.get("/erp-api/notifications", requireAuth, function listNotifications(req, res) {
-  const context = getCollegeContext(readDb(), req.auth.collegeId);
+app.get("/erp-api/notifications", requireAuth, async function listNotifications(req, res) {
+  const db = await readDb();
+  const context = getCollegeContext(db, req.auth.collegeId);
   const notifications =
     req.auth.role === "student"
       ? context.notifications.filter(function ownNotifications(entry) {
@@ -452,7 +453,7 @@ app.get("/erp-api/notifications", requireAuth, function listNotifications(req, r
 });
 
 app.post("/erp-api/notifications/scan", requireAuth, allowRoles("admin"), async function scanNotifications(req, res) {
-  const db = readDb();
+  const db = await readDb();
   const context = getCollegeContext(db, req.auth.collegeId);
   const studentProfiles = await Promise.all(
     context.students.map(function buildProfile(student) {
@@ -469,14 +470,14 @@ app.post("/erp-api/notifications/scan", requireAuth, allowRoles("admin"), async 
     studentProfiles: studentProfiles.filter(Boolean)
   });
 
-  writeDb(db);
+  await writeDb(db);
   emitCollegeEvent(req.auth.collegeId, "notifications.scanned", { created: created.length });
   res.json({ created });
 });
 
-app.patch("/erp-api/subscription", requireAuth, allowRoles("admin"), function updateSubscription(req, res) {
+app.patch("/erp-api/subscription", requireAuth, allowRoles("admin"), async function updateSubscription(req, res) {
   const plan = cleanString(req.body.plan).toLowerCase() === "pro" ? "pro" : "free";
-  const db = readDb();
+  const db = await readDb();
   let subscription = db.subscriptions.find(function matchSubscription(record) {
     return record.collegeId === req.auth.collegeId;
   });
@@ -492,7 +493,7 @@ app.patch("/erp-api/subscription", requireAuth, allowRoles("admin"), function up
     subscription.updatedAt = new Date().toISOString();
   }
 
-  writeDb(db);
+  await writeDb(db);
   emitCollegeEvent(req.auth.collegeId, "subscription.updated", { plan: subscription.plan });
   res.json({ subscription });
 });
@@ -503,7 +504,7 @@ app.get("/erp-api/reports/students/:studentId/marksheet", requireAuth, async fun
     return;
   }
 
-  const db = readDb();
+  const db = await readDb();
   const context = getCollegeContext(db, req.auth.collegeId);
   const profile = await buildStudentProfile(db, req.auth.collegeId, req.params.studentId);
 
@@ -524,7 +525,7 @@ app.get("/erp-api/reports/students/:studentId/attendance", requireAuth, async fu
     return;
   }
 
-  const db = readDb();
+  const db = await readDb();
   const context = getCollegeContext(db, req.auth.collegeId);
   const profile = await buildStudentProfile(db, req.auth.collegeId, req.params.studentId);
 
@@ -550,9 +551,7 @@ app.use(function serveFrontend(req, res, next) {
   res.sendFile(path.join(frontDir, "index.html"));
 });
 
-server.listen(port, function onListen() {
-  console.log(`EDUSMART is running at http://localhost:${port}`);
-});
+startServer();
 
 function buildSubscription(collegeId, plan) {
   return {
@@ -603,4 +602,44 @@ async function refreshAlertsForStudents(db, collegeId, studentIds) {
     }),
     studentProfiles: studentProfiles.filter(Boolean)
   });
+}
+
+function createCorsOptions() {
+  const allowedOrigins = String(process.env.CLIENT_ORIGIN || process.env.EDUSMART_FRONTEND_ORIGIN || "")
+    .split(",")
+    .map(function trimOrigin(origin) {
+      return origin.trim();
+    })
+    .filter(Boolean);
+
+  if (!allowedOrigins.length) {
+    return {
+      origin: true,
+      credentials: true
+    };
+  }
+
+  return {
+    origin: function allowConfiguredOrigins(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Blocked by CORS"));
+    },
+    credentials: true
+  };
+}
+
+async function startServer() {
+  try {
+    await ensureDb();
+    server.listen(port, function onListen() {
+      console.log(`EDUSMART is running at http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error("Unable to start EDUSMART.", error);
+    process.exit(1);
+  }
 }

@@ -59,3 +59,57 @@ Supported variables:
 ```bash
 npm run erp:check
 ```
+
+## Production deployment
+
+EDUSMART is now prepared for a split deployment:
+
+- Frontend: Vercel
+- API: Render web service
+- AI service: Render web service
+- Database: MongoDB Atlas
+
+### 1. MongoDB Atlas
+
+Create a MongoDB Atlas cluster and copy the connection string into:
+
+- `MONGODB_URI`
+- `MONGODB_DB_NAME`
+
+### 2. Render
+
+This repo includes [render.yaml](C:/Users/navne/OneDrive/Documents/New%20project/render.yaml) for:
+
+- `edusmart-api`
+- `edusmart-ai`
+
+In Render, import the Blueprint from this repo and fill these secrets:
+
+- `COLLEGE_ERP_JWT_SECRET`
+- `CLIENT_ORIGIN`
+- `MONGODB_URI`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
+
+Use your Vercel frontend URL as `CLIENT_ORIGIN`.
+
+### 3. Vercel
+
+This repo includes [vercel.json](C:/Users/navne/OneDrive/Documents/New%20project/vercel.json) and [build-vercel.js](C:/Users/navne/OneDrive/Documents/New%20project/scripts/build-vercel.js).
+
+Set these Vercel environment variables:
+
+- `EDUSMART_API_BASE`
+- `EDUSMART_SOCKET_URL`
+- `EDUSMART_SOCKET_PATH`
+
+Example values:
+
+- `EDUSMART_API_BASE=https://your-edusmart-api.onrender.com`
+- `EDUSMART_SOCKET_URL=https://your-edusmart-api.onrender.com`
+- `EDUSMART_SOCKET_PATH=/socket.io`
+
+Then deploy the repo to Vercel. The build will output a static frontend in `dist/`.

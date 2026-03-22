@@ -1,0 +1,52 @@
+services:
+  - type: web
+    name: edusmart-api
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: npm ci
+    startCommand: npm run erp:start
+    healthCheckPath: /erp-api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_DB_NAME
+        value: edusmart
+      - key: COLLEGE_AI_SERVICE_URL
+        fromService:
+          name: edusmart-ai
+          type: web
+          property: host
+      - key: COLLEGE_ERP_JWT_SECRET
+        sync: false
+      - key: CLIENT_ORIGIN
+        sync: false
+      - key: MONGODB_URI
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        sync: false
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+
+  - type: web
+    name: edusmart-ai
+    runtime: python
+    rootDir: ai-service
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.10

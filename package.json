@@ -8,7 +8,8 @@
     "check": "node --check backend/server.js && node --check product-data.js && node --check firebase-config.js && node --check app.js",
     "erp:start": "node backend/college-erp-server.js",
     "erp:check": "node --check backend/college-erp-server.js && node --check erp/app.js",
-    "ai:start": "python ai-service/app.py"
+    "ai:start": "python ai-service/app.py",
+    "vercel:build": "node scripts/build-vercel.js"
   },
   "engines": {
     "node": ">=18"
@@ -21,6 +22,7 @@
     "express-rate-limit": "^8.3.1",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
+    "mongodb": "^6.21.0",
     "nodemailer": "^8.0.3",
     "pdfkit": "^0.18.0",
     "socket.io": "^4.8.3"

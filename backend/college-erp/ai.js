@@ -45,7 +45,7 @@ function buildFallbackInsights(metrics) {
 }
 
 async function predictStudentRisk(metrics) {
-  const serviceUrl = process.env.COLLEGE_AI_SERVICE_URL || process.env.AI_SERVICE_URL;
+  const serviceUrl = normalizeServiceUrl(process.env.COLLEGE_AI_SERVICE_URL || process.env.AI_SERVICE_URL);
 
   if (!serviceUrl || typeof fetch !== "function") {
     return buildFallbackInsights(metrics);
@@ -87,3 +87,17 @@ async function predictStudentRisk(metrics) {
 module.exports = {
   predictStudentRisk
 };
+
+function normalizeServiceUrl(value) {
+  const raw = String(value || "").trim();
+
+  if (!raw) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(raw)) {
+    return raw;
+  }
+
+  return `https://${raw}`;
+}
