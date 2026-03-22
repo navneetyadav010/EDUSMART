@@ -1,0 +1,9 @@
+backend/data/database.json
+backend/data/college-erp-db.json
+ai-service/*.joblib
+ai-service/__pycache__/
+*.pyc
+node_modules/
+runtime-logs/
+
+.vercel

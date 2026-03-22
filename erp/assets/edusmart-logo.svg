@@ -1,0 +1,55 @@
+<svg width="720" height="640" viewBox="0 0 720 640" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="shieldFill" x1="360" y1="152" x2="360" y2="322" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4B4B50"/>
+      <stop offset="1" stop-color="#1E1E22"/>
+    </linearGradient>
+    <filter id="softShadow" x="245" y="145" width="230" height="210" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000000" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadow)">
+    <path d="M360 160L424 188V254C424 290 399.4 322.2 360 338C320.6 322.2 296 290 296 254V188L360 160Z" fill="url(#shieldFill)"/>
+    <path d="M360 177L409 199V252C409 281.8 389.4 307.6 360 320C330.6 307.6 311 281.8 311 252V199L360 177Z" fill="#2D2D31" stroke="#A7A7AC" stroke-opacity="0.55" stroke-width="6"/>
+    <path d="M352 212L390 223L363 232L327 221L352 212Z" fill="#FAFAFA"/>
+    <path d="M353 214L353 225L363 230V219L353 214Z" fill="#D5D7DB"/>
+    <path d="M360 232L393 223V229L360 240L327 229V223L360 232Z" fill="#EFEFEF"/>
+    <path d="M330 259C339.2 250.2 349.5 248.2 361 252.8C368.4 255.8 374.5 255.6 379.4 252.2L388.8 245.8C393.6 242.5 400 246 400 251.8V260.8C400 265.3 397.4 269.5 393.2 271.5L380.5 277.4C373.1 280.8 365 281.8 356.9 280.4L341.6 277.7L338.6 282.6L324 277.8L330 259Z" fill="#FAFAFA"/>
+    <path d="M311 257L326 263.4L320.8 276L305.8 269.6L311 257Z" fill="#F0F0F0"/>
+    <path d="M313 262.5L317.7 264.5" stroke="#B7BAC0" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+
+  <g fill="#1F1F22" stroke="#1F1F22" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M291 398C251.8 377.2 226.7 350.7 212 319.4C194.4 281.8 192.9 241.8 207 203" stroke-width="8"/>
+    <path d="M429 398C468.2 377.2 493.3 350.7 508 319.4C525.6 281.8 527.1 241.8 513 203" stroke-width="8"/>
+
+    <ellipse cx="213" cy="333" rx="12" ry="28" transform="rotate(-57 213 333)"/>
+    <ellipse cx="224" cy="304" rx="12" ry="28" transform="rotate(-48 224 304)"/>
+    <ellipse cx="232" cy="273" rx="12" ry="28" transform="rotate(-36 232 273)"/>
+    <ellipse cx="237" cy="241" rx="12" ry="28" transform="rotate(-23 237 241)"/>
+    <ellipse cx="244" cy="210" rx="12" ry="28" transform="rotate(-10 244 210)"/>
+    <ellipse cx="260" cy="189" rx="12" ry="28" transform="rotate(8 260 189)"/>
+    <ellipse cx="283" cy="177" rx="12" ry="28" transform="rotate(28 283 177)"/>
+
+    <ellipse cx="507" cy="333" rx="12" ry="28" transform="rotate(57 507 333)"/>
+    <ellipse cx="496" cy="304" rx="12" ry="28" transform="rotate(48 496 304)"/>
+    <ellipse cx="488" cy="273" rx="12" ry="28" transform="rotate(36 488 273)"/>
+    <ellipse cx="483" cy="241" rx="12" ry="28" transform="rotate(23 483 241)"/>
+    <ellipse cx="476" cy="210" rx="12" ry="28" transform="rotate(10 476 210)"/>
+    <ellipse cx="460" cy="189" rx="12" ry="28" transform="rotate(-8 460 189)"/>
+    <ellipse cx="437" cy="177" rx="12" ry="28" transform="rotate(-28 437 177)"/>
+
+    <ellipse cx="239" cy="361" rx="12" ry="28" transform="rotate(-70 239 361)"/>
+    <ellipse cx="269" cy="385" rx="12" ry="28" transform="rotate(-84 269 385)"/>
+    <ellipse cx="304" cy="404" rx="12" ry="28" transform="rotate(-98 304 404)"/>
+    <ellipse cx="482" cy="361" rx="12" ry="28" transform="rotate(70 482 361)"/>
+    <ellipse cx="452" cy="385" rx="12" ry="28" transform="rotate(84 452 385)"/>
+    <ellipse cx="417" cy="404" rx="12" ry="28" transform="rotate(98 417 404)"/>
+
+    <path d="M323 440L358 413L397 440" stroke-width="8"/>
+    <path d="M326 443L358 423L394 443" stroke-width="4"/>
+  </g>
+
+  <text x="360" y="555" text-anchor="middle" fill="#1F1F22" font-family="Georgia, 'Times New Roman', serif" font-size="78" letter-spacing="4">EDUSMART</text>
+</svg>

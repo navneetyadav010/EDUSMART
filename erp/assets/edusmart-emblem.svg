@@ -1,0 +1,38 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="miniShield" x1="128" y1="56" x2="128" y2="138" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4B4B50"/>
+      <stop offset="1" stop-color="#1E1E22"/>
+    </linearGradient>
+  </defs>
+
+  <g fill="#1F1F22" stroke="#1F1F22" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M104 184C82.2 172.4 68.2 157.7 60 140.3C50.2 119.4 49.4 97.2 57.2 75.6" stroke-width="5"/>
+    <path d="M152 184C173.8 172.4 187.8 157.7 196 140.3C205.8 119.4 206.6 97.2 198.8 75.6" stroke-width="5"/>
+
+    <ellipse cx="60.5" cy="147" rx="6.5" ry="15" transform="rotate(-58 60.5 147)"/>
+    <ellipse cx="68" cy="131" rx="6.5" ry="15" transform="rotate(-46 68 131)"/>
+    <ellipse cx="73.5" cy="113" rx="6.5" ry="15" transform="rotate(-32 73.5 113)"/>
+    <ellipse cx="78" cy="95" rx="6.5" ry="15" transform="rotate(-17 78 95)"/>
+    <ellipse cx="86.5" cy="80" rx="6.5" ry="15" transform="rotate(2 86.5 80)"/>
+
+    <ellipse cx="195.5" cy="147" rx="6.5" ry="15" transform="rotate(58 195.5 147)"/>
+    <ellipse cx="188" cy="131" rx="6.5" ry="15" transform="rotate(46 188 131)"/>
+    <ellipse cx="182.5" cy="113" rx="6.5" ry="15" transform="rotate(32 182.5 113)"/>
+    <ellipse cx="178" cy="95" rx="6.5" ry="15" transform="rotate(17 178 95)"/>
+    <ellipse cx="169.5" cy="80" rx="6.5" ry="15" transform="rotate(-2 169.5 80)"/>
+
+    <ellipse cx="77.5" cy="163.5" rx="6.5" ry="15" transform="rotate(-73 77.5 163.5)"/>
+    <ellipse cx="97" cy="178.5" rx="6.5" ry="15" transform="rotate(-88 97 178.5)"/>
+    <ellipse cx="158.5" cy="163.5" rx="6.5" ry="15" transform="rotate(73 158.5 163.5)"/>
+    <ellipse cx="139" cy="178.5" rx="6.5" ry="15" transform="rotate(88 139 178.5)"/>
+    <path d="M108 207L128 190L148 207" stroke-width="5"/>
+  </g>
+
+  <path d="M128 57L165 73V111C165 131.8 150.8 150.3 128 159C105.2 150.3 91 131.8 91 111V73L128 57Z" fill="url(#miniShield)"/>
+  <path d="M128 67L155 80V110C155 127 143.7 141.7 128 148.8C112.3 141.7 101 127 101 110V80L128 67Z" fill="#2D2D31" stroke="#A7A7AC" stroke-opacity="0.55" stroke-width="3.5"/>
+  <path d="M123 86L145 92L129 97L108 91L123 86Z" fill="#FAFAFA"/>
+  <path d="M129 97L148 92V96L129 103L110 96V92L129 97Z" fill="#F0F0F0"/>
+  <path d="M110 114C115.3 109 121.2 107.8 127.8 110.3C132 111.9 135.6 111.8 138.4 109.9L143.8 106.2C146.5 104.3 150.2 106.3 150.2 109.7V114.8C150.2 117.4 148.8 119.7 146.4 120.8L139.2 124.1C135 126 130.4 126.6 125.8 125.8L117.1 124.3L115.4 127.1L107.1 124.4L110 114Z" fill="#FAFAFA"/>
+  <path d="M99.5 112.8L108 116.4L105 123.6L96.5 120Z" fill="#F0F0F0"/>
+</svg>
